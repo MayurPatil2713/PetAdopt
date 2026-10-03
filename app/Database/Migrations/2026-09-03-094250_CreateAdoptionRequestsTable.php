@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreatePetsTable extends Migration
+class CreateAdoptionRequestsTable extends Migration
 {
     public function up()
     {
@@ -15,48 +15,39 @@ class CreatePetsTable extends Migration
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
-            'shelter_id' => [
+            'pet_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
             ],
-            'name' => [
+            'adopter_name' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 100,
             ],
-            'species' => [
+            'adopter_email' => [
                 'type'       => 'VARCHAR',
-                'constraint' => 50,
+                'constraint' => 150,
             ],
-            'breed' => [
-                'type'       => 'VARCHAR',
-                'constraint' => 100,
-            ],
-            'age' => [
-                'type'       => 'INT',
-                'constraint' => 3,
-            ],
-            'gender' => [
+            'phone' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 20,
             ],
-            'vaccination_status' => [
-                'type'       => 'VARCHAR',
-                'constraint' => 50,
+            'address' => [
+                'type' => 'TEXT',
             ],
-            'description' => [
+            'occupation' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 100,
+                'null'       => true,
+            ],
+            'reason' => [
                 'type' => 'TEXT',
                 'null' => true,
-            ],
-            'image' => [
-                'type'       => 'VARCHAR',
-                'constraint' => 255,
-                'null'       => true,
             ],
             'status' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 20,
-                'default'    => 'Available',
+                'default'    => 'Pending',
             ],
             'created_at' => [
                 'type' => 'DATETIME',
@@ -70,18 +61,18 @@ class CreatePetsTable extends Migration
 
         $this->forge->addKey('id', true);
         $this->forge->addForeignKey(
-            'shelter_id',
-            'shelters',
+            'pet_id',
+            'pets',
             'id',
             'CASCADE',
             'CASCADE'
         );
 
-        $this->forge->createTable('pets');
+        $this->forge->createTable('adoption_requests');
     }
 
     public function down()
     {
-        $this->forge->dropTable('pets');
+        $this->forge->dropTable('adoption_requests');
     }
 }
