@@ -103,6 +103,16 @@
 
                     <br><br>
 
+                    <?php if ($pet['status'] === 'Available'): ?>
+
+                        <br><br>
+
+                        <a href="<?= base_url('adoption/create/' . $pet['id']) ?>">
+                            Adopt
+                        </a>
+
+                    <?php endif; ?>
+
                     <form
                         action="<?= base_url('pets/delete/' . $pet['id']) ?>"
                         method="post"
