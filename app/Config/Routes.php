@@ -16,6 +16,9 @@ $routes->get('logout', 'AuthController::logout');
 $routes->get('adoption/create/(:num)', 'AdoptionController::create/$1');
 $routes->post('adoption/store/(:num)', 'AdoptionController::store/$1');
 
+$routes->get('pets/browse', 'PetController::browse');
+$routes->get('pets/details/(:num)', 'PetController::details/$1');
+
 $routes->group('', ['filter' => 'auth'], function ($routes) {
 
     $routes->get('dashboard', 'DashboardController::index');

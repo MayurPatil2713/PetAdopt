@@ -182,4 +182,32 @@ class PetController extends BaseController
         return redirect()->to('/pets')
             ->with('success', 'Pet deleted successfully.');
     }
+
+    public function browse()
+    {
+        $pets = $this->petModel
+            ->where('status', 'Available')
+            ->findAll();
+
+        return view('pets/browse', [
+            'pets' => $pets
+        ]);
+    }
+
+    public function details($id)
+    {
+        $pet = $this->petModel
+            ->where('id', $id)
+            ->where('status', 'Available')
+            ->first();
+
+        if (!$pet) {
+            return redirect()->to('/pets/browse')
+                ->with('error', 'Pet not found or no longer available.');
+        }
+
+        return view('pets/details', [
+            'pet' => $pet
+        ]);
+    }
 }
