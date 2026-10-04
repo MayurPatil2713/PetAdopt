@@ -76,4 +76,97 @@ class AdoptionController extends BaseController
         return redirect()->to('/pets')
             ->with('success', 'Adoption request submitted successfully.');
     }
-}
+
+    public function index()
+    {
+        $shelterId = session()->get('shelter_id');
+
+        $requests = $this->requestModel
+            ->select('adoption_requests.*, pets.name AS pet_name')
+            ->join('pets', 'pets.id = adoption_requests.pet_id')
+            ->where('pets.shelter_id', $shelterId)
+            ->orderBy('adoption_requests.created_at', 'DESC')
+            ->findAll();
+
+        return view('adoption/index', [
+            'requests' => $requests
+        ]);
+    }
+
+    public function approve($requestId)
+    {
+        $shelterId = session()->get('shelter_id');
+
+        $request = $this->requestModel
+            ->select('adoption_requests.*, pets.shelter_id, pets.status AS pet_status')
+            ->join('pets', 'pets.id = adoption_requests.pet_id')
+            ->where('adoption_requests.id', $requestId)
+            ->where('pets.shelter_id', $shelterId)
+            ->first();
+
+        if (!$request) {
+            return redirect()->to('/adoption/requests')
+                ->with('error', 'Adoption request not found.');
+        }
+
+        if ($request['status'] !== 'Pending') {
+            return redirect()->to('/adoption/requests')
+                ->with('error', 'This request has already been processed.');
+        }
+
+        if ($request['pet_status'] !== 'Available') {
+            return redirect()->to('/adoption/requests')
+                ->with('error', 'This pet is no longer available.');
+        }
+
+        // Approve request
+        $this->requestModel->update($requestId, [
+            'status' => 'Approved'
+        ]);
+
+        // Change pet status
+        $this->petModel->update($request['pet_id'], [
+            'status' => 'Adopted'
+        ]);
+
+        // Reject other pending requests for the same pet
+        $this->requestModel
+            ->where('pet_id', $request['pet_id'])
+            ->where('status', 'Pending')
+            ->where('id !=', $requestId)
+            ->set(['status' => 'Rejected'])
+            ->update();
+
+        return redirect()->to('/adoption/requests')
+            ->with('success', 'Adoption request approved successfully.');
+    }
+
+    public function reject($requestId)
+    {
+        $shelterId = session()->get('shelter_id');
+
+        $request = $this->requestModel
+            ->select('adoption_requests.*, pets.shelter_id')
+            ->join('pets', 'pets.id = adoption_requests.pet_id')
+            ->where('adoption_requests.id', $requestId)
+            ->where('pets.shelter_id', $shelterId)
+            ->first();
+
+        if (!$request) {
+            return redirect()->to('/adoption/requests')
+                ->with('error', 'Adoption request not found.');
+        }
+
+        if ($request['status'] !== 'Pending') {
+            return redirect()->to('/adoption/requests')
+                ->with('error', 'This request has already been processed.');
+        }
+
+        $this->requestModel->update($requestId, [
+            'status' => 'Rejected'
+        ]);
+
+        return redirect()->to('/adoption/requests')
+            ->with('success', 'Adoption request rejected.');
+    }
+    }

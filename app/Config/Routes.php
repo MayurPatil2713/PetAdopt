@@ -28,4 +28,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     $routes->post('pets/update/(:num)', 'PetController::update/$1');
 
     $routes->post('pets/delete/(:num)', 'PetController::delete/$1');
+
+    $routes->get('adoption/requests', 'AdoptionController::index');
+    $routes->get('adoption/approve/(:num)', 'AdoptionController::approve/$1');
+    $routes->get('adoption/reject/(:num)', 'AdoptionController::reject/$1');
 });

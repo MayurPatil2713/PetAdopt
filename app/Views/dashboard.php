@@ -25,5 +25,11 @@
 
 <p>Pending Adoption Requests: <?= esc($pendingRequests) ?></p>
 
+<p>
+    <a href="<?= base_url('adoption/requests') ?>">
+        Adoption Requests
+    </a>
+</p>
+
 </body>
 </html>
